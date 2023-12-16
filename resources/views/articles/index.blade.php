@@ -15,7 +15,12 @@
     <div class="card mb-2">
         <div class="card-body">
             <h3 class="card-title">{{ $article->title }}</h3>
-            <div class="text-muted">{{ $article->created_at->diffForHumans() }}</div>
+            <h4 class="h5 text-muted">Comments : {{count($article->comments)}}</h4>
+            <h4 class="h5 text-muted">Category : <span class="badge bg-secondary">
+                    {{ $article->category->name }}</span>
+            </h4>
+            <div class=" text-muted">{{ $article->created_at->diffForHumans() }}
+            </div>
             <div class="">{{ $article->body}}</div>
             <a href="{{ url("/articles/detail/$article->id")}}" class="card-link">View Detail</a>
         </div>
