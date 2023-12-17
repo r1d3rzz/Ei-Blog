@@ -40,6 +40,9 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <a href="{{url('/articles/detail/'.$article->id)}}" class="btn btn-secondary">Back</a>
+
                             <button class="btn btn-primary float-end">Update Article</button>
                         </form>
                     </div>

@@ -3,6 +3,13 @@
 
 @section("content")
 <div class="container" style="max-width: 800px">
+
+    @if (session('info'))
+    <div class="alert alert-info">
+        {{session('info')}}
+    </div>
+    @endif
+
     <div class="card mb-2 border-primary">
         <div class="card-body" style="font-size: 1.2em">
 
@@ -17,19 +24,36 @@
                 <a href="{{url("articles/edit/$article->id")}}" class="btn btn-sm btn-outline-warning">Edit</a>
             </div>
 
+            <div class="card-title text-info">
+                <span>Author : </span>
+                {{ $article->user->name }}
+            </div>
+
             <div class="card-title badge bg-secondary">{{ $article->category->name }}</div>
 
             <div class="text-muted">{{ $article->created_at->diffForHumans() }}</div>
             <div class="">{{ $article->body}}</div>
-            <a href="{{ url("/articles/delete/$article->id")}}" class="btn btn-sm btn-danger mt-3">Delete</a>
+            <a href="{{ url("/articles/delete/$article->id")}}" class="btn btn-sm btn-danger mt-3 float-end">Delete</a>
         </div>
     </div>
 
     <ul class="list-group mt-4">
         <li class="list-group-item bg-primary">Comments ({{count($article->comments)}})</li>
         @foreach ($article->comments as $comment)
-        <li class="list-group-item">{{$comment->contact}}</li>
+        <li class="list-group-item">
+            <a href="{{url('/comments/delete/'.$comment->id)}}" class="btn-close float-end"></a>
+            <span class="text-primary">{{$comment->user->name}}</span> - {{$comment->content}}
+        </li>
         @endforeach
     </ul>
+
+    <form action="{{url('/comments/add')}}" method="POST">
+        @csrf
+
+        <input type="hidden" name="article_id" value="{{$article->id}}">
+        <textarea name="content" id="content" class="form-control mt-3" placeholder="Enter Your Comment"></textarea>
+
+        <button class="btn btn-primary mt-2 float-end">Add Comment</button>
+    </form>
 </div>
 @endsection
