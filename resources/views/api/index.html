@@ -1,0 +1,127 @@
+<!-- For API Learning  -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        />
+        <script
+            src="https://kit.fontawesome.com/2c87f61656.js"
+            crossorigin="anonymous"
+        ></script>
+        <title>Api</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container" style="max-width: 600px">
+                <a href="#" class="navbar-brand">Categories</a>
+            </div>
+        </nav>
+
+        <div class="container" style="max-width: 600px">
+            <form id="add" class="input-group">
+                <input type="text" class="form-control" />
+                <button class="btn btn-dark">Add</button>
+            </form>
+
+            <ul class="list-group mt-3" id="list"></ul>
+        </div>
+
+        <script>
+            const api = "http://localhost:8000/api/categories";
+            const token = "1|xCcShs9iRGv9SHnzlcneWtfX8GNmj2TJsbcI4KVnefc36df9";
+
+            fetch(api, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => data.map((item) => createItem(item)))
+                .catch((err) => console.log(err.message));
+
+            document.querySelector("#add").onsubmit = function (e) {
+                e.preventDefault();
+
+                let name = document.querySelector("input").value;
+
+                if (!name) return false;
+
+                fetch(api, {
+                    method: "post",
+                    body: JSON.stringify({ name }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then((res) => res.json())
+                    .then((data) => createItem(data));
+
+                document.querySelector("input").value = "";
+                document.querySelector("input").focus();
+            };
+
+            function createItem(item) {
+                let li = document.createElement("li");
+                li.classList.add("list-group-item");
+                li.innerHTML = `<span>${item.name}</span>`;
+
+                let edit = document.createElement("a");
+                edit.href = "#";
+                edit.classList.add(
+                    "fa-solid",
+                    "fa-edit",
+                    "text-primary",
+                    "float-start",
+                    "me-3"
+                );
+                edit.onclick = function () {
+                    let currentName =
+                        document.querySelector("span").textContent;
+                    let updatedName = prompt("Update Category", currentName);
+                    if (updatedName) {
+                        fetch(`${api}/${item.id}`, {
+                            method: "put",
+                            body: JSON.stringify({ name: updatedName }),
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                        });
+
+                        li.querySelector("span").textContent = updatedName;
+                    }
+                };
+
+                li.appendChild(edit);
+
+                let del = document.createElement("a");
+                del.href = "#";
+                del.classList.add(
+                    "fa-solid",
+                    "fa-trash",
+                    "text-danger",
+                    "float-end"
+                );
+                del.onclick = function () {
+                    fetch(`${api}/${item.id}`, {
+                        method: "delete",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    li.remove();
+                };
+
+                li.appendChild(del);
+
+                document.querySelector("#list").appendChild(li);
+            }
+        </script>
+    </body>
+</html>

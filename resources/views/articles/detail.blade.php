@@ -21,7 +21,9 @@
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="card-title">{{ $article->title }}</h3>
+                @can('edit-article',$article)
                 <a href="{{url("articles/edit/$article->id")}}" class="btn btn-sm btn-outline-warning">Edit</a>
+                @endcan
             </div>
 
             <div class="card-title text-info">
@@ -33,7 +35,9 @@
 
             <div class="text-muted">{{ $article->created_at->diffForHumans() }}</div>
             <div class="">{{ $article->body}}</div>
+            @can('delete-article',$article)
             <a href="{{ url("/articles/delete/$article->id")}}" class="btn btn-sm btn-danger mt-3 float-end">Delete</a>
+            @endcan
         </div>
     </div>
 
@@ -41,12 +45,15 @@
         <li class="list-group-item bg-primary">Comments ({{count($article->comments)}})</li>
         @foreach ($article->comments as $comment)
         <li class="list-group-item">
+            @can("delete-comment",$comment)
             <a href="{{url('/comments/delete/'.$comment->id)}}" class="btn-close float-end"></a>
+            @endcan
             <span class="text-primary">{{$comment->user->name}}</span> - {{$comment->content}}
         </li>
         @endforeach
     </ul>
 
+    @auth
     <form action="{{url('/comments/add')}}" method="POST">
         @csrf
 
@@ -55,5 +62,6 @@
 
         <button class="btn btn-primary mt-2 float-end">Add Comment</button>
     </form>
+    @endauth
 </div>
 @endsection
